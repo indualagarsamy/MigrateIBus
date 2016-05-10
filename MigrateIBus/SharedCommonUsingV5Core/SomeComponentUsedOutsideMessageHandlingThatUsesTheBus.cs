@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Threading.Tasks;
 using NServiceBus;
 
 public class SomeComponentUsedOutsideMessageHandlingThatUsesTheBus : ISomeComponentUsedOutsideMessageHandlingThatUsesTheBus
 {
-    public IMessageSession Session { get; set; }
+    public IBus Bus { get; set; }
 
-    public async Task DoSomeDomainBehavior()
+    public void DoSomeDomainBehavior()
     {
         Console.WriteLine("Inside DoSomeDomainBehavior - use the bus to send a command");
-        await Session.SendLocal(new DoSomething());
+        Bus.SendLocal(new DoSomething());
     }
 }
 
 public interface ISomeComponentUsedOutsideMessageHandlingThatUsesTheBus
 {
-    Task DoSomeDomainBehavior();
+    void DoSomeDomainBehavior();
 }
 
 public class AnotherComponentUsedOutsideMessageHandling
@@ -27,9 +26,9 @@ public class AnotherComponentUsedOutsideMessageHandling
         _dependency = dependency;
     }
 
-    public async Task Start()
+    public void Start()
     {
-        await _dependency.DoSomeDomainBehavior();
+        _dependency.DoSomeDomainBehavior();
     }
 
     public void Stop()
@@ -39,16 +38,18 @@ public class AnotherComponentUsedOutsideMessageHandling
 
 public class SomeComponentUsedInsideMessageHandlingThatUsesTheBus : ISomeComponentUsedInsideMessageHandlingThatUsesTheBus
 {
-    public async Task DoSomeDomainBehavior(IMessageHandlerContext context)
+    public IBus Bus { get; set; }
+
+    public void DoSomeDomainBehavior()
     {
         Console.WriteLine("Inside DoSomeDomainBehavior - use the bus to send a command");
-        await context.SendLocal(new DoSomething());
+        Bus.SendLocal(new DoSomething());
     }
 }
 
 public interface ISomeComponentUsedInsideMessageHandlingThatUsesTheBus
 {
-    Task DoSomeDomainBehavior(IMessageHandlerContext context);
+    void DoSomeDomainBehavior();
 }
 
 public class DoSomething : ICommand
@@ -64,11 +65,10 @@ public class DoSomethingHandler : IHandleMessages<DoSomething>
         _dependency = dependency;
     }
 
-    public async Task Handle(DoSomething message, IMessageHandlerContext context)
+    public void Handle(DoSomething message)
     {
         Console.WriteLine("DoSomething has been invoked");
-
-        await _dependency.DoSomeDomainBehavior(context);
+        _dependency.DoSomeDomainBehavior();
     }
 }
 

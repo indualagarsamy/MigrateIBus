@@ -9,11 +9,11 @@ namespace NsbHostUsingV5Core
 {
     public class Bootstrapper : IWantToRunWhenBusStartsAndStops
     {
-        public ISomeComponent SomeComponent { get; set; }
+        public ISomeComponentUsedOutsideMessageHandlingThatUsesTheBus SomeComponentUsedOutsideMessageHandlingThatUsesTheBus { get; set; }
         public void Start()
         {
             Console.WriteLine("Endpoint bootstrapper - calling custom component");
-            SomeComponent.DoSomeDomainBehavior();
+            SomeComponentUsedOutsideMessageHandlingThatUsesTheBus.DoSomeDomainBehavior();
         }
 
         public void Stop()

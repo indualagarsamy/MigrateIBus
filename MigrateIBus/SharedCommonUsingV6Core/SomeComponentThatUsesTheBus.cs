@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Ninject;
 using NServiceBus;
 
 public class SomeComponentThatUsesTheBus : ISomeComponent
 {
-    //TODO: Ok, Remove IBus, but what gets injected here? IManageSession? IEndpointInstance? Something else?
-    public IBus Bus { get; set; }
+    [Inject]
+    public IMessageSession Bus { get; set; }
 
     public void DoSomeDomainBehavior()
     {
